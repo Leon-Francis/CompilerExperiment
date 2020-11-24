@@ -8,6 +8,9 @@
     "files.associations": {
         "iostream": "cpp",
         "cmath": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "ostream": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
     }, // 格式化时调整include的顺序（按字母排序）
 }

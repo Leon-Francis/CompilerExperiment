@@ -2,17 +2,20 @@
  * @Author: Leon-Francis
  * @Contact: 15290552788@163.com
  * @Date: 2020-11-17 19:34:49
- * @LastEditTime: 2020-11-17 20:08:39
+ * @LastEditTime: 2020-11-24 20:01:05
  * @LastEditors: Leon-Francis
  * @Description: 
- * @FilePath: /CompilerExperment/Tokenise.h
+ * @FilePath: /CompilerExperment/Tokenize.h
  * @(C)Copyright 2019-2020, Leon-Francis
  */
 #include <vector>
 #include <string>
-#define KEYWORDNUM 24
-#define OPERATORWORDNUM 14
-#define DELIMETERNUM 8
+#define KEYWORDNUM 32
+#define OPERATORWORDNUM 36
+#define DELIMETERNUM 12
+#define KEYWORDMAXLEN 8
+#define OPERATORWORDMAXLEN 3
+#define DELIMETERMAXLEN 1
 using namespace std;
 
 typedef struct
@@ -32,7 +35,7 @@ typedef struct
 typedef struct
 {
     int number;      //序号
-    string name[30]; //名字
+    string name; //名字
     string type;     //类型
 
 } WordSymble;
@@ -40,6 +43,6 @@ typedef struct
 vector<WordToken> wordToken;
 vector<WordSymble> wordSymble;
 
-Word keyWord[24] = {{"begin", 1}, {"end", 2}, {"interger", 3}, {"char", 4}, {"bool", 5}, {"real", 6}, {"input", 7}, {"output", 8}, {"program", 9}, {"read", 10}, {"write", 11}, {"for", 12}, {"to", 13}, {"while", 14}, {"do", 15}, {"repeat", 16}, {"until", 17}, {"if", 18}, {"then", 19}, {"else", 20}, {"true", 21}, {"false", 22}, {"var", 23}, {"const", 24}};
-Word operatorWord[14] = {{"+", 25}, {"-", 26}, {"*", 27}, {"/", 28}, {"=", 29}, {"<", 30}, {">", 31}, {"and", 32}, {"or", 33}, {"not", 34}, {"<=", 35}, {">=", 36}, {"<>", 37}, {":=", 38}};
-Word delimeter[8] = {{"(", 44}, {")", 45}, {":", 46}, {".", 47}, {";", 48}, {",", 49}, {"\'", 51}, {"\"", 52}};
+Word keyWord[KEYWORDNUM] = {{"auto", 1}, {"break", 2}, {"case", 3}, {"char", 4}, {"const", 5}, {"continue", 6}, {"default", 7}, {"do", 8}, {"double", 9}, {"else", 10}, {"enum", 11}, {"extend", 12}, {"float", 13}, {"for", 14}, {"goto", 15}, {"if", 16}, {"int", 17}, {"long", 18}, {"register", 19}, {"return", 20}, {"short", 21}, {"signed", 22}, {"sizeof", 23}, {"static", 24}, {"struct", 25}, {"switch", 26}, {"typedef", 27}, {"union", 28},{"unsigned", 29},{"void", 30}, {"volatile", 31}, {"while", 32}};
+Word operatorWord[OPERATORWORDNUM] = {{"+", 33}, {"-", 34}, {"*", 35}, {"/", 36}, {"%", 37}, {"++", 38}, {"--", 39}, {"==", 40}, {"!=", 41}, {">", 42}, {"<", 43}, {">=", 44}, {"<=", 45}, {"&&", 46}, {"||", 47}, {"!", 48}, {"&", 49},{"|", 50}, {"^", 51}, {"~", 52}, {"<<", 53}, {">>", 54}, {"=", 55}, {"+=", 56}, {"-=", 57}, {"*=", 58}, {"/=", 59}, {"%=", 60}, {"<<=", 61}, {">>=", 62}, {"&=", 63}, {"^=", 64}, {"|=", 65}, {"&", 66}, {"*", 67}, {"?", 68}};
+Word delimeter[DELIMETERNUM] = {{"{", 69}, {"}", 70}, {"(", 71}, {")", 72}, {"[", 73}, {"]", 74}, {":", 75}, {".", 76}, {";", 77}, {",", 78}, {"\'", 79}, {"\"", 80}};
