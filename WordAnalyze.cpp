@@ -98,7 +98,7 @@ string isId(string str, int index)
         if (isalpha(str[index]) || str[index] == '_')
         {
             int num = 1;
-            while (isalpha(str[index + num] || isdigit(str[index + num]) || str[index + num] == '_'))
+            while (isalpha(str[index + num]) || isdigit(str[index + num]) || str[index + num] == '_')
             {
                 num++;
             }
