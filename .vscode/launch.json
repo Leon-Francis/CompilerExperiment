@@ -10,7 +10,7 @@
             "name": "Build and Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/exe/${fileBasenameNoExtension}.exe",
+            "program": "${workspaceFolder}\\exe\\${fileBasenameNoExtension}.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
