@@ -13,15 +13,19 @@
 using namespace std;
 int tempnum = 0;
 
-string outputResult = "";
+typedef struct
+{
+    int addr;
+    string output;
+} OutputResult;
+vector<OutputResult> outputResult;
+int address = 100;
 
 typedef struct Node
 {
     //属性
     string name = "";
-    int code = -1;
     string place = "";
-    int type = -1;
     int symbleIndex = -1;
     bool complete = false;
     //指针
@@ -49,11 +53,15 @@ void StatementFunc(NodePointer pointer, bool print = false)
         pointer->complete = false;
     }
 
-    if (print == true)
+    if (print)
     {
         if (pointer->childs[2]->place != "")
         {
-            outputResult += "(:=, " + pointer->childs[1]->place + ", _, " + pointer->childs[0]->place + ")\n";
+            OutputResult temp;
+            temp.addr = address;
+            temp.output = "(:=, " + pointer->childs[2]->place + ", _, " + pointer->childs[1]->place + ")\n";
+            outputResult.push_back(temp);
+            address++;
         }
     }
 }
@@ -70,15 +78,29 @@ void VariableClosureFunc(NodePointer pointer, bool print = false)
         pointer->complete = false;
     }
 
-    if (print == true)
+    if (print)
     {
+        if (pointer->childs[1]->place != "")
+        {
+            OutputResult temp;
+            temp.addr = address;
+            temp.output = "(:=, " + pointer->childs[1]->place + ", _, " + pointer->childs[0]->place + ")\n";
+            outputResult.push_back(temp);
+            address++;
+        }
     }
 }
 
-void InitValue(NodePointer pointer, bool print = false)
+void VariableFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if (pointer->childs[0]->name == "Empty")
+    pointer->place = pointer->childs[0]->place;
+}
+
+void InitValueFunc(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    if (pointer->childs[0]->name == "empty")
     {
         return;
     }
@@ -92,16 +114,19 @@ void InitValue(NodePointer pointer, bool print = false)
     }
 }
 
-void Expression(NodePointer pointer, bool print = false)
+void ExpressionFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->childs[0]->place != "")
     {
-        if (pointer->childs[1]->childs[0]->name != "Empty")
+        if (pointer->childs[1]->childs[0]->name != "empty")
         {
             if (pointer->childs[1]->place != "")
             {
-                pointer->place = newTemp();
+                if (pointer->place == "")
+                {
+                    pointer->place = newTemp();
+                }
             }
             else
             {
@@ -117,25 +142,32 @@ void Expression(NodePointer pointer, bool print = false)
     {
         pointer->complete = false;
     }
-    if (print == true)
+    if (print)
     {
-        if (pointer->childs[1]->childs[0]->name != "Empty")
+        if (pointer->childs[1]->childs[0]->name != "empty")
         {
-            outputResult += "(" + pointer->childs[1]->childs[0]->name + ", " + pointer->childs[0]->place + ", " + pointer->childs[1]->place + ", " + pointer->place + ")\n";
+            OutputResult temp;
+            temp.addr = address;
+            temp.output = "(" + pointer->childs[1]->childs[0]->name + ", " + pointer->childs[0]->place + ", " + pointer->childs[1]->place + ", " + pointer->place + ")\n";
+            outputResult.push_back(temp);
+            address++;
         }
     }
 }
 
-void Factor(NodePointer pointer, bool print = false)
+void FactorFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->childs[0]->place != "")
     {
-        if (pointer->childs[1]->childs[0]->name != "Empty")
+        if (pointer->childs[1]->childs[0]->name != "empty")
         {
             if (pointer->childs[1]->place != "")
             {
-                pointer->place = newTemp();
+                if (pointer->place == "")
+                {
+                    pointer->place = newTemp();
+                }
             }
             else
             {
@@ -151,11 +183,170 @@ void Factor(NodePointer pointer, bool print = false)
     {
         pointer->complete = false;
     }
-    if (print == true)
+    if (print)
     {
-        if (pointer->childs[1]->childs[0]->name != "Empty")
+        if (pointer->childs[1]->childs[0]->name != "empty")
         {
-            outputResult += "(" + pointer->childs[1]->childs[0]->name + ", " + pointer->childs[0]->place + ", " + pointer->childs[1]->place + ", " + pointer->place + ")\n";
+            OutputResult temp;
+            temp.addr = address;
+            temp.output = "(" + pointer->childs[1]->childs[0]->name + ", " + pointer->childs[0]->place + ", " + pointer->childs[1]->place + ", " + pointer->place + ")\n";
+            outputResult.push_back(temp);
+            address++;
         }
+    }
+}
+
+void FactorExpressionFunc(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    if (pointer->childs[0]->name == "(")
+    {
+        if (pointer->childs[1]->place != "")
+        {
+            pointer->place = pointer->childs[1]->place;
+        }
+        else
+        {
+            pointer->complete = false;
+        }
+    }
+    else if (pointer->childs[0]->name == "Variable")
+    {
+        if (pointer->childs[0]->place != "")
+        {
+            pointer->place = pointer->childs[0]->place;
+        }
+        else
+        {
+            pointer->complete = false;
+        }
+    }
+    else
+    {
+        if (pointer->childs[0]->place != "")
+        {
+            pointer->place = pointer->childs[0]->place;
+        }
+        else
+        {
+            pointer->complete = false;
+        }
+    }
+}
+
+void DigitFunc(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    pointer->place = pointer->childs[0]->place;
+}
+
+void FactorExpressionRecursionFunc(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    if (pointer->childs[0]->name == "empty")
+    {
+        return;
+    }
+    if (pointer->childs[1]->place != "")
+    {
+        if (pointer->childs[2]->childs[0]->name != "empty")
+        {
+            if (pointer->childs[2]->place != "")
+            {
+                if (pointer->place == "")
+                {
+                    pointer->place = newTemp();
+                }
+            }
+            else
+            {
+                pointer->complete = false;
+            }
+        }
+        else
+        {
+            pointer->place = pointer->childs[0]->place;
+        }
+    }
+    else
+    {
+        pointer->complete = false;
+    }
+    if (print)
+    {
+        if (pointer->childs[2]->childs[0]->name != "empty")
+        {
+            OutputResult temp;
+            temp.addr = address;
+            temp.output = "(" + pointer->childs[2]->childs[0]->name + ", " + pointer->childs[1]->place + ", " + pointer->childs[2]->place + ", " + pointer->place + ")\n";
+            outputResult.push_back(temp);
+            address++;
+        }
+    }
+}
+
+void ItemFunc(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    if (pointer->childs[0]->name == "empty")
+    {
+        return;
+    }
+    if (pointer->childs[1]->place != "")
+    {
+        if (pointer->childs[2]->childs[0]->name != "empty")
+        {
+            if (pointer->childs[2]->place != "")
+            {
+                if (pointer->place == "")
+                {
+                    pointer->place = newTemp();
+                }
+            }
+            else
+            {
+                pointer->complete = false;
+            }
+        }
+        else
+        {
+            pointer->place = pointer->childs[0]->place;
+        }
+    }
+    else
+    {
+        pointer->complete = false;
+    }
+    if (print)
+    {
+        if (pointer->childs[2]->childs[0]->name != "empty")
+        {
+            OutputResult temp;
+            temp.addr = address;
+            temp.output = "(" + pointer->childs[2]->childs[0]->name + ", " + pointer->childs[1]->place + ", " + pointer->childs[2]->place + ", " + pointer->place + ")\n";
+            outputResult.push_back(temp);
+            address++;
+        }
+    }
+}
+
+void AssignmentStatement(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    if(pointer->childs[0]->place != "" && pointer->childs[2]->place != "")
+    {
+
+    }
+    else
+    {
+        pointer->complete = false;
+    }
+    if(print)
+    {
+        OutputResult temp;
+        temp.addr = address;
+        temp.output = "(:=, " + pointer->childs[2]->place + ", _ , " + pointer->childs[0]->place + ")\n";
+        outputResult.push_back(temp);
+        address++;
     }
 }
