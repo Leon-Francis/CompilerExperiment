@@ -54,11 +54,30 @@ void initProduction()
     productions.push_back(factorExpressionRecursion);
     Production item = {"Item", {{{1, "+"}, {0, "Factor"}, {0, "Item"}}, {{1, "-"}, {0, "Factor"}, {0, "Item"}}, {{1, "empty"}}}, ItemFunc};
     productions.push_back(item);
-    Production functionClosure = {"FunctionClosure", {{{0, "AssignmentStatement"}, {0, "FunctionClosure"}}, {{0, "ForCycle"}, {0, "FunctionClosure"}}, {{0, "WhileCycle"}, {0, "FunctionClosure"}}, {{0, "IfStatement"}, {0, "FunctionClosure"}}, {{0, "ReturnStatement"}, {0, "FunctionClosure"}}, {{1, "empty"}}}};
+    Production functionClosure = {"FunctionClosure", {{{0, "AssignmentStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "WhileCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "IfStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{1, "empty"}}}, FunctionClosure};
     productions.push_back(functionClosure);
     Production assignmentStatement = {"AssignmentStatement", {{{0, "Variable"}, {1, "="}, {0, "Expression"}, {1, ";"}}}, AssignmentStatement};
     productions.push_back(assignmentStatement);
-    Production boolStatement = {"BoolStatement", {{{}}}};
+    Production boolStatement = {"BoolStatement", {{{0, "BoolItem"}, {0, "BoolStatementClosure"}}}, BoolStatement};
+    productions.push_back(boolStatement);
+    Production m = {"M", {{{1, "empty"}}}, M};
+    productions.push_back(m);
+    Production boolStatementClosure = {"BoolStatementClosure", {{{1, "||"}, {0, "M"}, {0, "BoolItem"}, {0, "BoolStatementClosure"}}, {{1, "empty"}}}, BoolStatementClosure};
+    productions.push_back(boolStatementClosure);
+    Production boolItem = {"BoolItem", {{{0, "BoolFactor"}, {0, "BoolItemClosure"}}}, BoolItem};
+    productions.push_back(boolItem);
+    Production boolItemClosure = {"BoolItemClosure", {{{1, "&&"}, {0, "M"}, {0, "BoolFactor"}, {0, "BoolItemClosure"}}, {{1, "empty"}}}, BoolItemClosure};
+    productions.push_back(boolItemClosure);
+    Production boolFactor = {"BoolFactor", {{{0, "Expression"}, {0, "BoolSymbol"}, {0, "Expression"}}, {{1, "!"}, {0, "BoolFactor"}}}, BoolFactor};
+    productions.push_back(boolFactor);
+    Production boolSymbol = {"BoolSymbol", {{{1, "<"}}, {{1, ">"}}, {{1, "=="}}, {{1, "!="}}}};
+    productions.push_back(boolSymbol);
+    Production whileCycle = {"WhileCycle", {{{1, "while"}, {1, "("}, {0, "M"}, {0, "BoolStatement"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}}, WhileCycle};
+    productions.push_back(whileCycle);
+    Production ifStatement = {"IfStatement", {{{1, "if"}, {1, "("}, {0, "BoolStatement"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}, {0, "ElseStatement"}}}, IfStatement};
+    productions.push_back(ifStatement);
+    Production elseStatement = {"ElseStatement", {{{0, "N"}, {1, "else"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}, {{1, "empty"}}}};
+    productions.push_back(elseStatement);
 }
 
 
