@@ -8,7 +8,9 @@
  * @FilePath: /CompilerExperment/WordAnalyze.h
  * @(C)Copyright 2019-2020, Leon-Francis
  */
+#ifndef KEYWORDNUM
 #include "Tokenize.h"
+#endif
 #include "WrongMes.h"
 #include <fstream>
 #include <iostream>
@@ -529,17 +531,4 @@ void printAll()
         cout << wrongInfo[i].wrongPos.first << " " << wrongInfo[i].wrongPos.second << "\t\t" << wrongInfo[i].wrongType << "\t\t" << wrongInfo[i].wrongMes << endl;
     }
     cout << "-----------------------------------------------" << endl;
-}
-
-int main(int argc, char const *argv[])
-{
-    cout << "Input program path:";
-    string inPath;
-    cin >> inPath;
-    vector<string> allText;
-    readFile(inPath, allText);
-    text2Token(allText);
-    printAll();
-    cout << endl;
-    return 0;
 }
