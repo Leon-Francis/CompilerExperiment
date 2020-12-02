@@ -1,8 +1,8 @@
 /*
  * @Author: Leon-Francis
  * @Contact: 15290552788@163.com
- * @Date: 2020-11-25 12:15:17
- * @LastEditTime: 2020-11-25 12:15:17
+ * @Date: 2020-11-25 17:31:55
+ * @LastEditTime: 2020-12-02 10:47:54
  * @LastEditors: Leon-Francis
  * @Description: 错误信息
  * @FilePath: /CompilerExperment/WrongMes.h

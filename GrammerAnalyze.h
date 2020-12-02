@@ -1,11 +1,11 @@
 /*
  * @Author: Leon-Francis
  * @Contact: 15290552788@163.com
- * @Date: 2020-11-30 12:16:24
- * @LastEditTime: 2020-11-30 22:51:56
+ * @Date: 2020-12-02 01:16:21
+ * @LastEditTime: 2020-12-02 10:47:05
  * @LastEditors: Leon-Francis
  * @Description: 文法产生式
- * @FilePath: /undefinedd:/CodingMore/CompilerExperment/GrammerAnalyze.h
+ * @FilePath: /CompilerExperment/GrammerAnalyze.h
  * @(C)Copyright 2019-2020, Leon-Francis
  */
 #include <string>
@@ -689,15 +689,15 @@ void BoolFactor(NodePointer pointer, bool print = false)
             OutputResult temp;
             temp.addr = pointer->printAddress;
             temp.op = "j";
-            if (pointer->childs[1]->name == "<")
+            if (pointer->childs[1]->childs[0]->name == "<")
             {
                 temp.op += "b";
             }
-            else if (pointer->childs[1]->name == ">")
+            else if (pointer->childs[1]->childs[0]->name == ">")
             {
                 temp.op += "a";
             }
-            else if (pointer->childs[1]->name == "==")
+            else if (pointer->childs[1]->childs[0]->name == "==")
             {
                 temp.op += "z";
             }
@@ -778,6 +778,49 @@ void IfStatement(NodePointer pointer, bool print = false)
     }
 }
 
+void SuffixStatement(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    if (pointer->printAddress == -1)
+    {
+        pointer->printAddress = address;
+        address++;
+    }
+    if (print)
+    {
+        OutputResult temp;
+        temp.addr = pointer->printAddress;
+        temp.op = pointer->childs[1]->childs[0]->name;
+        temp.num1 = "__";
+        temp.num2 = "__";
+        temp.num3 = pointer->childs[0]->place;
+        outputResult.push_back(temp);
+    }
+}
+
+void ForCycle(NodePointer pointer, bool print = false)
+{
+    pointer->complete = true;
+    if (pointer->printAddress == -1)
+    {
+        pointer->printAddress = address;
+        address++;
+    }
+    pointer->nextaddr = pointer->childs[4]->falseaddr;
+    if (print)
+    {
+        BackPatch(pointer->childs[8]->nextaddr, pointer->childs[3]->quad);
+        BackPatch(pointer->childs[4]->trueaddr, pointer->childs[11]->quad);
+        OutputResult temp;
+        temp.addr = pointer->printAddress;
+        temp.op = "j";
+        temp.num1 = "__";
+        temp.num2 = "__";
+        temp.num3 = to_string(pointer->childs[6]->quad);
+        outputResult.push_back(temp);
+    }
+}
+
 void initProduction()
 {
     Production program = {"Program", {{{1, "int"}, {1, "main"}, {1, "("}, {1, ")"}, {1, "{"}, {0, "ProgramBody"}, {1, "}"}}}};
@@ -810,7 +853,7 @@ void initProduction()
     productions.push_back(factorExpressionRecursion);
     Production item = {"Item", {{{1, "+"}, {0, "Factor"}, {0, "Item"}}, {{1, "-"}, {0, "Factor"}, {0, "Item"}}, {{1, "empty"}}}, ItemFunc, {{"+"}, {"-"}, {";", "id", "<", ">", "==", "!", "<=", ">=", ")"}}};
     productions.push_back(item);
-    Production functionClosure = {"FunctionClosure", {{{0, "AssignmentStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "WhileCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "IfStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{1, "empty"}}}, FunctionClosure, {{"id"}, {"while"}, {"if"}, {"}"}}};
+    Production functionClosure = {"FunctionClosure", {{{0, "AssignmentStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "WhileCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "IfStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "ForCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{1, "empty"}}}, FunctionClosure, {{"id"}, {"while"}, {"if"}, {"for"}, {"}"}}};
     productions.push_back(functionClosure);
     Production assignmentStatement = {"AssignmentStatement", {{{0, "Variable"}, {1, "="}, {0, "Expression"}, {1, ";"}}}, AssignmentStatement};
     productions.push_back(assignmentStatement);
@@ -820,11 +863,11 @@ void initProduction()
     productions.push_back(m);
     Production n = {"N", {{{1, "empty"}}}, N};
     productions.push_back(n);
-    Production boolStatementClosure = {"BoolStatementClosure", {{{1, "||"}, {0, "M"}, {0, "BoolItem"}, {0, "BoolStatementClosure"}}, {{1, "empty"}}}, BoolStatementClosure, {{"|"}, {")"}}};
+    Production boolStatementClosure = {"BoolStatementClosure", {{{1, "||"}, {0, "M"}, {0, "BoolItem"}, {0, "BoolStatementClosure"}}, {{1, "empty"}}}, BoolStatementClosure, {{"|"}, {")", ";"}}};
     productions.push_back(boolStatementClosure);
     Production boolItem = {"BoolItem", {{{0, "BoolFactor"}, {0, "BoolItemClosure"}}}, BoolItem};
     productions.push_back(boolItem);
-    Production boolItemClosure = {"BoolItemClosure", {{{1, "&&"}, {0, "M"}, {0, "BoolFactor"}, {0, "BoolItemClosure"}}, {{1, "empty"}}}, BoolItemClosure, {{"&"}, {"|", ")"}}};
+    Production boolItemClosure = {"BoolItemClosure", {{{1, "&&"}, {0, "M"}, {0, "BoolFactor"}, {0, "BoolItemClosure"}}, {{1, "empty"}}}, BoolItemClosure, {{"&"}, {"|", ")", ";"}}};
     productions.push_back(boolItemClosure);
     Production boolFactor = {"BoolFactor", {{{0, "Expression"}, {0, "BoolSymbol"}, {0, "Expression"}}, {{1, "!"}, {0, "BoolFactor"}}}, BoolFactor, {{"(", "digit", "id"}, {"!"}}};
     productions.push_back(boolFactor);
@@ -836,4 +879,10 @@ void initProduction()
     productions.push_back(ifStatement);
     Production elseStatement = {"ElseStatement", {{{0, "N"}, {1, "else"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}, {{1, "empty"}}}, NULL, {{"else"}, {"}", "id", "while", "if"}}};
     productions.push_back(elseStatement);
+    Production forCycle = {"ForCycle", {{{1, "for"}, {1, "("}, {0, "AssignmentStatement"}, {0, "M"}, {0, "BoolStatement"}, {1, ";"}, {0, "M"}, {0, "SuffixStatement"}, {0, "N"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}}, ForCycle};
+    productions.push_back(forCycle);
+    Production suffixStatement = {"SuffixStatement", {{{0, "Variable"}, {0, "Suffix"}}}, SuffixStatement};
+    productions.push_back(suffixStatement);
+    Production suffix = {"Suffix", {{{1, "++"}}, {{1, "--"}}}, NULL, {{"++"}, {"--"}}};
+    productions.push_back(suffix);
 }
