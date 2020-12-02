@@ -1,4 +1,4 @@
-# CompilerExperment
+# CompilerExperiment
 
 华北电力大学编译技术实验
 
