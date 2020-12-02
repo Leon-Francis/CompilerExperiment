@@ -70,7 +70,7 @@ void BackPatch(vector<int> backAddr, int quad)
     }
 }
 
-void Merge(vector<int> e1, vector<int> e3)
+void Merge(vector<int> e1, vector<int> &e3)
 {
     for (int i = 0; i < e1.size(); i++)
     {
@@ -148,15 +148,18 @@ void VariableClosureFunc(NodePointer pointer, bool print = false)
 
     if (print)
     {
-        if (pointer->childs[1]->place != "")
+        if (pointer->childs[0]->name != "empty")
         {
-            OutputResult temp;
-            temp.addr = pointer->printAddress;
-            temp.op = ":=";
-            temp.num1 = pointer->childs[1]->place;
-            temp.num2 = "__";
-            temp.num3 = pointer->childs[0]->place;
-            outputResult.push_back(temp);
+            if (pointer->childs[1]->childs[0]->name != "empty")
+            {
+                OutputResult temp;
+                temp.addr = pointer->printAddress;
+                temp.op = ":=";
+                temp.num1 = pointer->childs[1]->place;
+                temp.num2 = "__";
+                temp.num3 = pointer->childs[0]->place;
+                outputResult.push_back(temp);
+            }
         }
     }
 }
@@ -342,7 +345,7 @@ void FactorExpressionRecursionFunc(NodePointer pointer, bool print = false)
         }
         else
         {
-            pointer->place = pointer->childs[0]->place;
+            pointer->place = pointer->childs[1]->place;
         }
     }
     else
@@ -367,51 +370,53 @@ void FactorExpressionRecursionFunc(NodePointer pointer, bool print = false)
 void ItemFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if (pointer->childs[0]->name == "empty")
+    if (pointer->childs[0]->name != "empty")
     {
-        return;
-    }
-    if (pointer->childs[1]->place != "")
-    {
-        if (pointer->childs[2]->childs[0]->name != "empty")
+        if (pointer->childs[1]->place != "")
         {
-            if (pointer->printAddress == -1)
+            if (pointer->childs[2]->childs[0]->name != "empty")
             {
-                pointer->printAddress = address;
-                address++;
-            }
-            if (pointer->childs[2]->place != "")
-            {
-                if (pointer->place == "")
+                if (pointer->printAddress == -1)
                 {
-                    pointer->place = newTemp();
+                    pointer->printAddress = address;
+                    address++;
+                }
+                if (pointer->childs[2]->place != "")
+                {
+                    if (pointer->place == "")
+                    {
+                        pointer->place = newTemp();
+                    }
+                }
+                else
+                {
+                    pointer->complete = false;
                 }
             }
             else
             {
-                pointer->complete = false;
+                pointer->place = pointer->childs[1]->place;
             }
         }
         else
         {
-            pointer->place = pointer->childs[0]->place;
+            pointer->complete = false;
         }
-    }
-    else
-    {
-        pointer->complete = false;
     }
     if (print)
     {
-        if (pointer->childs[2]->childs[0]->name != "empty")
+        if (pointer->childs[0]->name != "empty")
         {
-            OutputResult temp;
-            temp.addr = pointer->printAddress;
-            temp.op = pointer->childs[2]->childs[0]->name;
-            temp.num1 = pointer->childs[1]->place;
-            temp.num2 = pointer->childs[2]->place;
-            temp.num3 = pointer->place;
-            outputResult.push_back(temp);
+            if (pointer->childs[2]->childs[0]->name != "empty")
+            {
+                OutputResult temp;
+                temp.addr = pointer->printAddress;
+                temp.op = pointer->childs[2]->childs[0]->name;
+                temp.num1 = pointer->childs[1]->place;
+                temp.num2 = pointer->childs[2]->place;
+                temp.num3 = pointer->place;
+                outputResult.push_back(temp);
+            }
         }
     }
 }
@@ -471,7 +476,7 @@ void BoolStatement(NodePointer pointer, bool print = false)
             pointer->complete = false;
         }
     }
-    if(print)
+    if (print)
     {
         if (pointer->childs[1]->childs[0]->name != "empty")
         {
@@ -560,7 +565,6 @@ void BoolStatementClosure(NodePointer pointer, bool print = false)
             }
         }
     }
-    
 }
 
 void BoolItem(NodePointer pointer, bool print = false)
@@ -601,7 +605,6 @@ void BoolItem(NodePointer pointer, bool print = false)
             }
         }
     }
-    
 }
 
 void BoolItemClosure(NodePointer pointer, bool print = false)
@@ -648,7 +651,6 @@ void BoolItemClosure(NodePointer pointer, bool print = false)
             }
         }
     }
-    
 }
 
 void BoolFactor(NodePointer pointer, bool print = false)
@@ -721,7 +723,7 @@ void BoolFactor(NodePointer pointer, bool print = false)
 void FunctionClosure(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if(print)
+    if (print)
     {
         if (pointer->childs[0]->name != "empty")
         {
@@ -757,7 +759,7 @@ void WhileCycle(NodePointer pointer, bool print = false)
 void IfStatement(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if(print)
+    if (print)
     {
         if (pointer->childs[8]->childs[0]->name != "empty")
         {
