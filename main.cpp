@@ -33,5 +33,7 @@ int main(int argc, char const *argv[])
     initProduction();
     NodePointer root;
     root = CreateTree(wordToken);
+    CalculateAttr(root);
+    Print4Element(root);
     return 0;
 }

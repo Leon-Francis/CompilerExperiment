@@ -72,6 +72,7 @@ NodePointer CreateTree(vector<WordToken> wordToken)
                         p->childs.push_back(temp);
                         temp->parents = p;
                     }
+                    p->procIndex = i;
                 }
                 else
                 {
@@ -80,9 +81,11 @@ NodePointer CreateTree(vector<WordToken> wordToken)
                         NodePointer temp = new Node;
                         temp->name = productions[i].result[0][j].second;
                         temp->type = productions[i].result[0][j].first;
+                        temp->procIndex = i;
                         p->childs.push_back(temp);
                         temp->parents = p;
                     }
+                    p->procIndex = i;
                 }
                 ReversePushStack(tokenStack, p);
                 break;
@@ -92,6 +95,16 @@ NodePointer CreateTree(vector<WordToken> wordToken)
         {
             if (tokenStack.top()->name == wordToken[index].name || (wordToken[index].code == 81 && tokenStack.top()->name == "id") || ((wordToken[index].code == 82 || wordToken[index].code == 83) && tokenStack.top()->name == "digit"))
             {
+                if (wordToken[index].code == 81 && tokenStack.top()->name == "id")
+                {
+                    p->place = wordToken[index].name;
+                    p->symbleIndex = wordToken[index].addr;
+                }
+                else if ((wordToken[index].code == 82 || wordToken[index].code == 83) && tokenStack.top()->name == "digit")
+                {
+                    p->place = wordToken[index].name;
+                    p->symbleIndex = wordToken[index].addr;
+                }
                 tokenStack.pop();
                 index++;
             }
@@ -119,5 +132,53 @@ NodePointer CreateTree(vector<WordToken> wordToken)
     {
         cout << "Create grammer tree Error" << endl;
         return NULL;
+    }
+}
+
+bool IfAllCalculate(NodePointer root)
+{
+    for (int i = 0; i < root->childs.size(); i++)
+    {
+        if (!IfAllCalculate(root->childs[i]))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void VisitNode(NodePointer p, bool print = false)
+{
+    if (p->type == 0)
+    {
+        for (int i = 0; i < p->childs.size(); i++)
+        {
+            if (p->childs[i]->type == 0)
+            {
+                VisitNode(p->childs[i], print);
+            }
+        }
+        if (productions[p->procIndex].func != NULL)
+        {
+            productions[p->procIndex].func(p, print);
+        }
+    }
+}
+
+void CalculateAttr(NodePointer root)
+{
+    VisitNode(root, false);
+    while (!IfAllCalculate(root))
+    {
+        VisitNode(root, false);
+    }
+}
+
+void Print4Element(NodePointer root)
+{
+    VisitNode(root, true);
+    for (int i = 0; i < outputResult.size(); i++)
+    {
+        cout << outputResult[i].addr << "  " << outputResult[i].op << "  " << outputResult[i].num1 << "  " << outputResult[i].num2 << "  " << outputResult[i].num3 << endl;
     }
 }

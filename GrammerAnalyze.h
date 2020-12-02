@@ -39,6 +39,7 @@ typedef struct Node
     vector<int> nextaddr;
     int printAddress = -1;
     int quad = -1;
+    int procIndex;
 
     //指针
     struct Node *parents;
@@ -126,19 +127,22 @@ void StatementFunc(NodePointer pointer, bool print = false)
 void VariableClosureFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if (pointer->childs[1]->childs[0]->name != "empty")
+    if (pointer->childs[0]->name != "empty")
     {
-        if (pointer->printAddress == -1)
+        if (pointer->childs[1]->childs[0]->name != "empty")
         {
-            pointer->printAddress = address;
-            address++;
-        }
-        if (pointer->childs[0]->place != "")
-        {
-        }
-        else
-        {
-            pointer->complete = false;
+            if (pointer->printAddress == -1)
+            {
+                pointer->printAddress = address;
+                address++;
+            }
+            if (pointer->childs[0]->place != "")
+            {
+            }
+            else
+            {
+                pointer->complete = false;
+            }
         }
     }
 
@@ -155,12 +159,6 @@ void VariableClosureFunc(NodePointer pointer, bool print = false)
             outputResult.push_back(temp);
         }
     }
-}
-
-void VariableFunc(NodePointer pointer, bool print = false)
-{
-    pointer->complete = true;
-    pointer->place = pointer->childs[0]->place;
 }
 
 void InitValueFunc(NodePointer pointer, bool print = false)
@@ -314,12 +312,6 @@ void FactorExpressionFunc(NodePointer pointer, bool print = false)
     }
 }
 
-void DigitFunc(NodePointer pointer, bool print = false)
-{
-    pointer->complete = true;
-    pointer->place = pointer->childs[0]->place;
-}
-
 void FactorExpressionRecursionFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
@@ -461,7 +453,6 @@ void BoolStatement(NodePointer pointer, bool print = false)
             pointer->falseaddr = pointer->childs[1]->falseaddr;
             Merge(pointer->childs[0]->trueaddr, pointer->trueaddr);
             Merge(pointer->childs[1]->trueaddr, pointer->trueaddr);
-            BackPatch(pointer->childs[0]->falseaddr, pointer->childs[1]->childs[1]->quad);
         }
         else
         {
@@ -478,6 +469,16 @@ void BoolStatement(NodePointer pointer, bool print = false)
         else
         {
             pointer->complete = false;
+        }
+    }
+    if(print)
+    {
+        if (pointer->childs[1]->childs[0]->name != "empty")
+        {
+            if (pointer->childs[0]->complete && pointer->childs[1]->complete)
+            {
+                BackPatch(pointer->childs[0]->falseaddr, pointer->childs[1]->childs[1]->quad);
+            }
         }
     }
 }
@@ -518,32 +519,48 @@ void N(NodePointer pointer, bool print = false)
 void BoolStatementClosure(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if (pointer->childs[3]->childs[0]->name != "empty")
+    if (pointer->childs[0]->name != "empty")
     {
-        if (pointer->childs[2]->complete && pointer->childs[3]->complete)
+        if (pointer->childs[3]->childs[0]->name != "empty")
         {
-            pointer->falseaddr = pointer->childs[3]->falseaddr;
-            Merge(pointer->childs[2]->trueaddr, pointer->trueaddr);
-            Merge(pointer->childs[3]->trueaddr, pointer->trueaddr);
-            BackPatch(pointer->childs[2]->falseaddr, pointer->childs[3]->childs[1]->quad);
+            if (pointer->childs[2]->complete && pointer->childs[3]->complete)
+            {
+                pointer->falseaddr = pointer->childs[3]->falseaddr;
+                Merge(pointer->childs[2]->trueaddr, pointer->trueaddr);
+                Merge(pointer->childs[3]->trueaddr, pointer->trueaddr);
+            }
+            else
+            {
+                pointer->complete = false;
+            }
         }
         else
         {
-            pointer->complete = false;
+            if (pointer->childs[2]->complete)
+            {
+                pointer->trueaddr = pointer->childs[2]->trueaddr;
+                pointer->falseaddr = pointer->childs[2]->falseaddr;
+            }
+            else
+            {
+                pointer->complete = false;
+            }
         }
     }
-    else
+    if (print)
     {
-        if (pointer->childs[2]->complete)
+        if (pointer->childs[0]->name != "empty")
         {
-            pointer->trueaddr = pointer->childs[2]->trueaddr;
-            pointer->falseaddr = pointer->childs[2]->falseaddr;
-        }
-        else
-        {
-            pointer->complete = false;
+            if (pointer->childs[3]->childs[0]->name != "empty")
+            {
+                if (pointer->childs[2]->complete && pointer->childs[3]->complete)
+                {
+                    BackPatch(pointer->childs[2]->falseaddr, pointer->childs[3]->childs[1]->quad);
+                }
+            }
         }
     }
+    
 }
 
 void BoolItem(NodePointer pointer, bool print = false)
@@ -556,7 +573,6 @@ void BoolItem(NodePointer pointer, bool print = false)
             pointer->trueaddr = pointer->childs[1]->trueaddr;
             Merge(pointer->childs[0]->falseaddr, pointer->falseaddr);
             Merge(pointer->childs[1]->falseaddr, pointer->falseaddr);
-            BackPatch(pointer->childs[0]->falseaddr, pointer->childs[1]->childs[1]->quad);
         }
         else
         {
@@ -575,37 +591,64 @@ void BoolItem(NodePointer pointer, bool print = false)
             pointer->complete = false;
         }
     }
+    if (print)
+    {
+        if (pointer->childs[1]->childs[0]->name != "empty")
+        {
+            if (pointer->childs[0]->complete && pointer->childs[1]->complete)
+            {
+                BackPatch(pointer->childs[0]->falseaddr, pointer->childs[1]->childs[1]->quad);
+            }
+        }
+    }
+    
 }
 
 void BoolItemClosure(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if (pointer->childs[3]->childs[0]->name != "empty")
+    if (pointer->childs[0]->name != "empty")
     {
-        if (pointer->childs[2]->complete && pointer->childs[3]->complete)
+        if (pointer->childs[3]->childs[0]->name != "empty")
         {
-            pointer->trueaddr = pointer->childs[3]->trueaddr;
-            Merge(pointer->childs[2]->falseaddr, pointer->falseaddr);
-            Merge(pointer->childs[3]->falseaddr, pointer->falseaddr);
-            BackPatch(pointer->childs[2]->falseaddr, pointer->childs[3]->childs[1]->quad);
+            if (pointer->childs[2]->complete && pointer->childs[3]->complete)
+            {
+                pointer->trueaddr = pointer->childs[3]->trueaddr;
+                Merge(pointer->childs[2]->falseaddr, pointer->falseaddr);
+                Merge(pointer->childs[3]->falseaddr, pointer->falseaddr);
+            }
+            else
+            {
+                pointer->complete = false;
+            }
         }
         else
         {
-            pointer->complete = false;
+            if (pointer->childs[2]->complete)
+            {
+                pointer->trueaddr = pointer->childs[2]->trueaddr;
+                pointer->falseaddr = pointer->childs[2]->falseaddr;
+            }
+            else
+            {
+                pointer->complete = false;
+            }
         }
     }
-    else
+    if (print)
     {
-        if (pointer->childs[2]->complete)
+        if (pointer->childs[0]->name != "empty")
         {
-            pointer->trueaddr = pointer->childs[2]->trueaddr;
-            pointer->falseaddr = pointer->childs[2]->falseaddr;
-        }
-        else
-        {
-            pointer->complete = false;
+            if (pointer->childs[3]->childs[0]->name != "empty")
+            {
+                if (pointer->childs[2]->complete && pointer->childs[3]->complete)
+                {
+                    BackPatch(pointer->childs[2]->falseaddr, pointer->childs[3]->childs[1]->quad);
+                }
+            }
         }
     }
+    
 }
 
 void BoolFactor(NodePointer pointer, bool print = false)
@@ -678,9 +721,12 @@ void BoolFactor(NodePointer pointer, bool print = false)
 void FunctionClosure(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if (pointer->childs[0]->name != "empty")
+    if(print)
     {
-        BackPatch(pointer->childs[0]->nextaddr, pointer->childs[1]->quad);
+        if (pointer->childs[0]->name != "empty")
+        {
+            BackPatch(pointer->childs[0]->nextaddr, pointer->childs[1]->quad);
+        }
     }
 }
 
@@ -692,11 +738,12 @@ void WhileCycle(NodePointer pointer, bool print = false)
         pointer->printAddress = address;
         address++;
     }
-    BackPatch(pointer->childs[7]->nextaddr, pointer->childs[2]->quad);
-    BackPatch(pointer->childs[3]->trueaddr, pointer->childs[6]->quad);
+
     pointer->nextaddr = pointer->childs[3]->falseaddr;
     if (print)
     {
+        BackPatch(pointer->childs[7]->nextaddr, pointer->childs[2]->quad);
+        BackPatch(pointer->childs[3]->trueaddr, pointer->childs[6]->quad);
         OutputResult temp;
         temp.addr = pointer->printAddress;
         temp.op = "j";
@@ -710,19 +757,22 @@ void WhileCycle(NodePointer pointer, bool print = false)
 void IfStatement(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
-    if (pointer->childs[8]->childs[0]->name != "empty")
+    if(print)
     {
-        BackPatch(pointer->childs[2]->trueaddr, pointer->childs[5]->quad);
-        BackPatch(pointer->childs[2]->falseaddr, pointer->childs[8]->childs[3]->quad);
-        Merge(pointer->childs[6]->nextaddr, pointer->nextaddr);
-        Merge(pointer->childs[8]->childs[0]->nextaddr, pointer->nextaddr);
-        Merge(pointer->childs[8]->childs[4]->nextaddr, pointer->nextaddr);
-    }
-    else
-    {
-        BackPatch(pointer->childs[2]->trueaddr, pointer->childs[5]->quad);
-        Merge(pointer->childs[2]->falseaddr, pointer->nextaddr);
-        Merge(pointer->childs[6]->nextaddr, pointer->nextaddr);
+        if (pointer->childs[8]->childs[0]->name != "empty")
+        {
+            BackPatch(pointer->childs[2]->trueaddr, pointer->childs[5]->quad);
+            BackPatch(pointer->childs[2]->falseaddr, pointer->childs[8]->childs[3]->quad);
+            Merge(pointer->childs[6]->nextaddr, pointer->nextaddr);
+            Merge(pointer->childs[8]->childs[0]->nextaddr, pointer->nextaddr);
+            Merge(pointer->childs[8]->childs[4]->nextaddr, pointer->nextaddr);
+        }
+        else
+        {
+            BackPatch(pointer->childs[2]->trueaddr, pointer->childs[5]->quad);
+            Merge(pointer->childs[2]->falseaddr, pointer->nextaddr);
+            Merge(pointer->childs[6]->nextaddr, pointer->nextaddr);
+        }
     }
 }
 
@@ -742,7 +792,7 @@ void initProduction()
     productions.push_back(variableClosure);
     Production type = {"Type", {{{1, "int"}}, {{1, "char"}}, {{1, "double"}}, {{1, "float"}}, {{1, "long"}}, {{1, "short"}}}, NULL, {{"int"}, {"char"}, {"double"}, {"float"}, {"long"}, {"short"}}};
     productions.push_back(type);
-    Production variable = {"Variable", {{{1, "id"}}}, VariableFunc};
+    Production variable = {"Variable", {{{1, "id"}}}, NULL};
     productions.push_back(variable);
     Production initValue = {"InitValue", {{{1, "="}, {0, "Expression"}}, {{1, "empty"}}}, InitValueFunc, {{"="}, {"id", ";"}}};
     productions.push_back(initValue);
@@ -752,11 +802,11 @@ void initProduction()
     productions.push_back(factor);
     Production factorExpression = {"FactorExpression", {{{1, "("}, {0, "Expression"}, {1, ")"}}, {{0, "Variable"}}, {{0, "Digit"}}}, FactorExpressionFunc, {{"("}, {"id"}, {"digit"}}};
     productions.push_back(factorExpression);
-    Production digit = {"Digit", {{{1, "digit"}}}, DigitFunc};
+    Production digit = {"Digit", {{{1, "digit"}}}, NULL};
     productions.push_back(digit);
-    Production factorExpressionRecursion = {"FactorExpressionRecursion", {{{1, "*"}, {0, "FactorExpression"}, {0, "FactorExpressionRecursion"}}, {{1, "/"}, {0, "FactorExpression"}, {0, "FactorExpressionRecursion"}}, {{1, "empty"}}}, FactorExpressionRecursionFunc, {{"*"}, {"/"}, {"+", "-", ";", "id", "<", ">", "=", "!"}}};
+    Production factorExpressionRecursion = {"FactorExpressionRecursion", {{{1, "*"}, {0, "FactorExpression"}, {0, "FactorExpressionRecursion"}}, {{1, "/"}, {0, "FactorExpression"}, {0, "FactorExpressionRecursion"}}, {{1, "empty"}}}, FactorExpressionRecursionFunc, {{"*"}, {"/"}, {"+", "-", ";", "id", "<", ">", "==", "!", "<=", ">=", ")"}}};
     productions.push_back(factorExpressionRecursion);
-    Production item = {"Item", {{{1, "+"}, {0, "Factor"}, {0, "Item"}}, {{1, "-"}, {0, "Factor"}, {0, "Item"}}, {{1, "empty"}}}, ItemFunc, {{"+"}, {"-"}, {";", "id", "<", ">", "=", "!"}}};
+    Production item = {"Item", {{{1, "+"}, {0, "Factor"}, {0, "Item"}}, {{1, "-"}, {0, "Factor"}, {0, "Item"}}, {{1, "empty"}}}, ItemFunc, {{"+"}, {"-"}, {";", "id", "<", ">", "==", "!", "<=", ">=", ")"}}};
     productions.push_back(item);
     Production functionClosure = {"FunctionClosure", {{{0, "AssignmentStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "WhileCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "IfStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{1, "empty"}}}, FunctionClosure, {{"id"}, {"while"}, {"if"}, {"}"}}};
     productions.push_back(functionClosure);

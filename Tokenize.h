@@ -29,7 +29,7 @@ typedef struct
     int label;    //单词序号
     string name = "";  //单词本身
     int code = 0;     //单词种别编码
-    int addr = 0; //单词在符号表中的指针
+    int addr = -1; //单词在符号表中的指针
     pair<int, int> pos; //单词在源文本中的位置
 } WordToken;
 

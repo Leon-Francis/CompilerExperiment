@@ -45,9 +45,9 @@ int isKeyWord(string str, int index) //最大匹配
 {
     if (str != "")
     {
-        for (int i = 0; i < KEYWORDNUM; i++)
+        for (int j = min(KEYWORDMAXLEN, int(str.size()) - index); j > 0; j--)
         {
-            for (int j = min(KEYWORDMAXLEN, int(str.size()) - index); j > 0; j--)
+            for (int i = 0; i < KEYWORDNUM; i++)
             {
                 if (str.substr(index, j) == keyWord[i].name)
                 {
@@ -62,9 +62,10 @@ int isKeyWord(string str, int index) //最大匹配
 int isOperator(string str, int index) //最大匹配
 {
     if (str != "")
-        for (int i = 0; i < OPERATORWORDNUM; i++)
+    {
+        for (int j = min(OPERATORWORDMAXLEN, int(str.size()) - index); j > 0; j--)
         {
-            for (int j = min(OPERATORWORDMAXLEN, int(str.size()) - index); j > 0; j--)
+            for (int i = 0; i < OPERATORWORDNUM; i++)
             {
                 if (str.substr(index, j) == operatorWord[i].name)
                 {
@@ -72,6 +73,8 @@ int isOperator(string str, int index) //最大匹配
                 }
             }
         }
+    }
+
     return 0;
 }
 
@@ -79,9 +82,9 @@ int isDelimeter(string str, int index) //最大匹配
 {
     if (str != "")
     {
-        for (int i = 0; i < DELIMETERNUM; i++)
+        for (int j = min(DELIMETERMAXLEN, int(str.size()) - index); j > 0; j--)
         {
-            for (int j = min(DELIMETERMAXLEN, int(str.size()) - index); j > 0; j--)
+            for (int i = 0; i < DELIMETERNUM; i++)
             {
                 if (str.substr(index, j) == delimeter[i].name)
                 {
