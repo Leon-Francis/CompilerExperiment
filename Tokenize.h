@@ -4,7 +4,7 @@
  * @Date: 2020-11-25 17:31:55
  * @LastEditTime: 2020-12-02 10:47:38
  * @LastEditors: Leon-Francis
- * @Description: 
+ * @Description: 记录单词词法信息
  * @FilePath: /CompilerExperment/Tokenize.h
  * @(C)Copyright 2019-2020, Leon-Francis
  */

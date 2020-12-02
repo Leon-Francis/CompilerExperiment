@@ -18,7 +18,7 @@
 #include <vector>
 
 using namespace std;
-
+//倒序入栈
 void ReversePushStack(stack<NodePointer> &tokenStack, NodePointer pointer)
 {
     for (int t = pointer->childs.size() - 1; t >= 0; t--)
@@ -26,7 +26,7 @@ void ReversePushStack(stack<NodePointer> &tokenStack, NodePointer pointer)
         tokenStack.push(pointer->childs[t]);
     }
 }
-
+//递归下降建立语法树
 NodePointer CreateTree(vector<WordToken> wordToken)
 {
     //根节点
@@ -134,7 +134,7 @@ NodePointer CreateTree(vector<WordToken> wordToken)
         return NULL;
     }
 }
-
+//判断属性是否全部计算
 bool IfAllCalculate(NodePointer root)
 {
     for (int i = 0; i < root->childs.size(); i++)
@@ -146,7 +146,7 @@ bool IfAllCalculate(NodePointer root)
     }
     return true;
 }
-
+//深度遍历节点，计算属性
 void VisitNode(NodePointer p, bool print = false)
 {
     if (p->type == 0)
@@ -164,7 +164,7 @@ void VisitNode(NodePointer p, bool print = false)
         }
     }
 }
-
+//计算继承属性
 void CalculateAttr(NodePointer root)
 {
     VisitNode(root, false);
@@ -173,10 +173,12 @@ void CalculateAttr(NodePointer root)
         VisitNode(root, false);
     }
 }
-
+//计算综合属性，打印四元式
 void Print4Element(NodePointer root)
 {
     VisitNode(root, true);
+    cout << "4-Elements are as follows:" << endl;
+    cout << endl;
     for (int i = 0; i < outputResult.size(); i++)
     {
         cout << outputResult[i].addr << "  " << outputResult[i].op << "  " << outputResult[i].num1 << "  " << outputResult[i].num2 << "  " << outputResult[i].num3 << endl;

@@ -15,7 +15,7 @@ using namespace std;
 #define BEGINADDR 100
 int tempnum = 0;
 
-typedef struct
+typedef struct  //四元式结果
 {
     int addr;
     string op;
@@ -26,7 +26,7 @@ typedef struct
 vector<OutputResult> outputResult;
 int address = BEGINADDR;
 
-typedef struct Node
+typedef struct Node //语法树节点
 {
     //属性
     string name = "";
@@ -47,7 +47,7 @@ typedef struct Node
 
 } * NodePointer;
 
-typedef struct
+typedef struct  //产生式节点
 {
     string production = "";
     vector<vector<pair<int, string>>> result;
@@ -89,6 +89,9 @@ void Merge(vector<int> e1, vector<int> &e3)
         }
     }
 }
+
+//-----------------------------------------------------------------------
+//以下为计算每个产生式属性的函数
 
 void StatementFunc(NodePointer pointer, bool print = false)
 {
@@ -421,7 +424,7 @@ void ItemFunc(NodePointer pointer, bool print = false)
     }
 }
 
-void AssignmentStatement(NodePointer pointer, bool print = false)
+void AssignmentStatementFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->printAddress == -1)
@@ -448,7 +451,7 @@ void AssignmentStatement(NodePointer pointer, bool print = false)
     }
 }
 
-void BoolStatement(NodePointer pointer, bool print = false)
+void BoolStatementFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->childs[1]->childs[0]->name != "empty")
@@ -488,7 +491,7 @@ void BoolStatement(NodePointer pointer, bool print = false)
     }
 }
 
-void M(NodePointer pointer, bool print = false)
+void MFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->quad == -1)
@@ -497,7 +500,7 @@ void M(NodePointer pointer, bool print = false)
     }
 }
 
-void N(NodePointer pointer, bool print = false)
+void NFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->nextaddr.size() == 0)
@@ -521,7 +524,7 @@ void N(NodePointer pointer, bool print = false)
     }
 }
 
-void BoolStatementClosure(NodePointer pointer, bool print = false)
+void BoolStatementClosureFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->childs[0]->name != "empty")
@@ -567,7 +570,7 @@ void BoolStatementClosure(NodePointer pointer, bool print = false)
     }
 }
 
-void BoolItem(NodePointer pointer, bool print = false)
+void BoolItemFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->childs[1]->childs[0]->name != "empty")
@@ -607,7 +610,7 @@ void BoolItem(NodePointer pointer, bool print = false)
     }
 }
 
-void BoolItemClosure(NodePointer pointer, bool print = false)
+void BoolItemClosureFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->childs[0]->name != "empty")
@@ -653,7 +656,7 @@ void BoolItemClosure(NodePointer pointer, bool print = false)
     }
 }
 
-void BoolFactor(NodePointer pointer, bool print = false)
+void BoolFactorFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->childs[0]->name != "!")
@@ -720,7 +723,7 @@ void BoolFactor(NodePointer pointer, bool print = false)
     }
 }
 
-void FunctionClosure(NodePointer pointer, bool print = false)
+void FunctionClosureFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (print)
@@ -732,7 +735,7 @@ void FunctionClosure(NodePointer pointer, bool print = false)
     }
 }
 
-void WhileCycle(NodePointer pointer, bool print = false)
+void WhileCycleFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->printAddress == -1)
@@ -756,7 +759,7 @@ void WhileCycle(NodePointer pointer, bool print = false)
     }
 }
 
-void IfStatement(NodePointer pointer, bool print = false)
+void IfStatementFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (print)
@@ -778,7 +781,7 @@ void IfStatement(NodePointer pointer, bool print = false)
     }
 }
 
-void SuffixStatement(NodePointer pointer, bool print = false)
+void SuffixStatementFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->printAddress == -1)
@@ -798,7 +801,7 @@ void SuffixStatement(NodePointer pointer, bool print = false)
     }
 }
 
-void ForCycle(NodePointer pointer, bool print = false)
+void ForCycleFunc(NodePointer pointer, bool print = false)
 {
     pointer->complete = true;
     if (pointer->printAddress == -1)
@@ -821,6 +824,7 @@ void ForCycle(NodePointer pointer, bool print = false)
     }
 }
 
+//初始化产生式
 void initProduction()
 {
     Production program = {"Program", {{{1, "int"}, {1, "main"}, {1, "("}, {1, ")"}, {1, "{"}, {0, "ProgramBody"}, {1, "}"}}}};
@@ -853,35 +857,35 @@ void initProduction()
     productions.push_back(factorExpressionRecursion);
     Production item = {"Item", {{{1, "+"}, {0, "Factor"}, {0, "Item"}}, {{1, "-"}, {0, "Factor"}, {0, "Item"}}, {{1, "empty"}}}, ItemFunc, {{"+"}, {"-"}, {";", "id", "<", ">", "==", "!", "<=", ">=", ")"}}};
     productions.push_back(item);
-    Production functionClosure = {"FunctionClosure", {{{0, "AssignmentStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "WhileCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "IfStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "ForCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{1, "empty"}}}, FunctionClosure, {{"id"}, {"while"}, {"if"}, {"for"}, {"}"}}};
+    Production functionClosure = {"FunctionClosure", {{{0, "AssignmentStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "WhileCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "IfStatement"}, {0, "M"}, {0, "FunctionClosure"}}, {{0, "ForCycle"}, {0, "M"}, {0, "FunctionClosure"}}, {{1, "empty"}}}, FunctionClosureFunc, {{"id"}, {"while"}, {"if"}, {"for"}, {"}"}}};
     productions.push_back(functionClosure);
-    Production assignmentStatement = {"AssignmentStatement", {{{0, "Variable"}, {1, "="}, {0, "Expression"}, {1, ";"}}}, AssignmentStatement};
+    Production assignmentStatement = {"AssignmentStatement", {{{0, "Variable"}, {1, "="}, {0, "Expression"}, {1, ";"}}}, AssignmentStatementFunc};
     productions.push_back(assignmentStatement);
-    Production boolStatement = {"BoolStatement", {{{0, "BoolItem"}, {0, "BoolStatementClosure"}}}, BoolStatement};
+    Production boolStatement = {"BoolStatement", {{{0, "BoolItem"}, {0, "BoolStatementClosure"}}}, BoolStatementFunc};
     productions.push_back(boolStatement);
-    Production m = {"M", {{{1, "empty"}}}, M};
+    Production m = {"M", {{{1, "empty"}}}, MFunc};
     productions.push_back(m);
-    Production n = {"N", {{{1, "empty"}}}, N};
+    Production n = {"N", {{{1, "empty"}}}, NFunc};
     productions.push_back(n);
-    Production boolStatementClosure = {"BoolStatementClosure", {{{1, "||"}, {0, "M"}, {0, "BoolItem"}, {0, "BoolStatementClosure"}}, {{1, "empty"}}}, BoolStatementClosure, {{"|"}, {")", ";"}}};
+    Production boolStatementClosure = {"BoolStatementClosure", {{{1, "||"}, {0, "M"}, {0, "BoolItem"}, {0, "BoolStatementClosure"}}, {{1, "empty"}}}, BoolStatementClosureFunc, {{"|"}, {")", ";"}}};
     productions.push_back(boolStatementClosure);
-    Production boolItem = {"BoolItem", {{{0, "BoolFactor"}, {0, "BoolItemClosure"}}}, BoolItem};
+    Production boolItem = {"BoolItem", {{{0, "BoolFactor"}, {0, "BoolItemClosure"}}}, BoolItemFunc};
     productions.push_back(boolItem);
-    Production boolItemClosure = {"BoolItemClosure", {{{1, "&&"}, {0, "M"}, {0, "BoolFactor"}, {0, "BoolItemClosure"}}, {{1, "empty"}}}, BoolItemClosure, {{"&"}, {"|", ")", ";"}}};
+    Production boolItemClosure = {"BoolItemClosure", {{{1, "&&"}, {0, "M"}, {0, "BoolFactor"}, {0, "BoolItemClosure"}}, {{1, "empty"}}}, BoolItemClosureFunc, {{"&"}, {"|", ")", ";"}}};
     productions.push_back(boolItemClosure);
-    Production boolFactor = {"BoolFactor", {{{0, "Expression"}, {0, "BoolSymbol"}, {0, "Expression"}}, {{1, "!"}, {0, "BoolFactor"}}}, BoolFactor, {{"(", "digit", "id"}, {"!"}}};
+    Production boolFactor = {"BoolFactor", {{{0, "Expression"}, {0, "BoolSymbol"}, {0, "Expression"}}, {{1, "!"}, {0, "BoolFactor"}}}, BoolFactorFunc, {{"(", "digit", "id"}, {"!"}}};
     productions.push_back(boolFactor);
     Production boolSymbol = {"BoolSymbol", {{{1, "<"}}, {{1, ">"}}, {{1, "=="}}, {{1, "!="}}}, NULL, {{"<"}, {">"}, {"=="}, {"!="}}};
     productions.push_back(boolSymbol);
-    Production whileCycle = {"WhileCycle", {{{1, "while"}, {1, "("}, {0, "M"}, {0, "BoolStatement"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}}, WhileCycle};
+    Production whileCycle = {"WhileCycle", {{{1, "while"}, {1, "("}, {0, "M"}, {0, "BoolStatement"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}}, WhileCycleFunc};
     productions.push_back(whileCycle);
-    Production ifStatement = {"IfStatement", {{{1, "if"}, {1, "("}, {0, "BoolStatement"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}, {0, "ElseStatement"}}}, IfStatement};
+    Production ifStatement = {"IfStatement", {{{1, "if"}, {1, "("}, {0, "BoolStatement"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}, {0, "ElseStatement"}}}, IfStatementFunc};
     productions.push_back(ifStatement);
     Production elseStatement = {"ElseStatement", {{{0, "N"}, {1, "else"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}, {{1, "empty"}}}, NULL, {{"else"}, {"}", "id", "while", "if"}}};
     productions.push_back(elseStatement);
-    Production forCycle = {"ForCycle", {{{1, "for"}, {1, "("}, {0, "AssignmentStatement"}, {0, "M"}, {0, "BoolStatement"}, {1, ";"}, {0, "M"}, {0, "SuffixStatement"}, {0, "N"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}}, ForCycle};
+    Production forCycle = {"ForCycle", {{{1, "for"}, {1, "("}, {0, "AssignmentStatement"}, {0, "M"}, {0, "BoolStatement"}, {1, ";"}, {0, "M"}, {0, "SuffixStatement"}, {0, "N"}, {1, ")"}, {1, "{"}, {0, "M"}, {0, "ProgramBody"}, {1, "}"}}}, ForCycleFunc};
     productions.push_back(forCycle);
-    Production suffixStatement = {"SuffixStatement", {{{0, "Variable"}, {0, "Suffix"}}}, SuffixStatement};
+    Production suffixStatement = {"SuffixStatement", {{{0, "Variable"}, {0, "Suffix"}}}, SuffixStatementFunc};
     productions.push_back(suffixStatement);
     Production suffix = {"Suffix", {{{1, "++"}}, {{1, "--"}}}, NULL, {{"++"}, {"--"}}};
     productions.push_back(suffix);

@@ -4,7 +4,7 @@
  * @Date: 2020-11-25 17:31:55
  * @LastEditTime: 2020-12-02 10:47:27
  * @LastEditors: Leon-Francis
- * @Description: 
+ * @Description: 词法分析过程
  * @FilePath: /CompilerExperment/WordAnalyze.h
  * @(C)Copyright 2019-2020, Leon-Francis
  */
@@ -41,7 +41,7 @@ void readFile(string inPath, vector<string> &allText)
     return;
 }
 
-int isKeyWord(string str, int index) //最大匹配
+int isKeyWord(string str, int index) //最大匹配关键字
 {
     if (str != "")
     {
@@ -59,7 +59,7 @@ int isKeyWord(string str, int index) //最大匹配
     return 0;
 }
 
-int isOperator(string str, int index) //最大匹配
+int isOperator(string str, int index) //最大匹配算符
 {
     if (str != "")
     {
@@ -78,7 +78,7 @@ int isOperator(string str, int index) //最大匹配
     return 0;
 }
 
-int isDelimeter(string str, int index) //最大匹配
+int isDelimeter(string str, int index) //最大匹配界符
 {
     if (str != "")
     {
@@ -96,7 +96,7 @@ int isDelimeter(string str, int index) //最大匹配
     return 0;
 }
 
-string isId(string str, int index)
+string isId(string str, int index) //识别标识符的自动机
 {
     if (str != "")
     {
@@ -113,7 +113,7 @@ string isId(string str, int index)
     return "";
 }
 
-string isInteger(string str, int index)
+string isInteger(string str, int index) //识别整数的自动机
 {
     if (str != "")
     {
@@ -130,7 +130,7 @@ string isInteger(string str, int index)
     return "";
 }
 
-string isRealNum(string str, int index)
+string isRealNum(string str, int index) //识别实数的自动机
 {
     if (str != "")
     {
@@ -221,7 +221,7 @@ string isRealNum(string str, int index)
     return "";
 }
 
-string isString(string str, int index)
+string isString(string str, int index) //识别字符串的自动机
 {
     if (str != "")
     {
@@ -246,7 +246,7 @@ string isString(string str, int index)
     return "";
 }
 
-string code2Name(int code)
+string code2Name(int code) //token编码转换为name
 {
     if (code <= KEYWORDNUM)
     {
@@ -493,7 +493,7 @@ void text2Token(vector<string> allText)
     cout << "Word analyze finished" << endl;
 }
 
-void printAll()
+void printAll() //打印token信息以及符号表以及错误信息
 {
     cout << endl;
     cout << "-----------------------------------------------" << endl;

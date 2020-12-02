@@ -9,8 +9,8 @@
  * @(C)Copyright 2019-2020, Leon-Francis
  */
 
-#include "WordAnalyze.h"
 #include "GrammerTree.h"
+#include "WordAnalyze.h"
 #include <iostream>
 #include <vector>
 
@@ -20,20 +20,17 @@ void readFile(string inPath, vector<string> &allText);
 
 int main(int argc, char const *argv[])
 {
-    cout << "Input program path:";
     string inPath;
-    inPath = "D:\\TestCode.txt";
+    inPath = ".\\TestCode.txt";
     vector<string> allText;
     readFile(inPath, allText);
-    text2Token(allText);
+    text2Token(allText); //词法分析
     printAll();
     cout << endl;
-    cout << endl;
-    cout << endl;
-    initProduction();
+    initProduction(); //初始化产生式
     NodePointer root;
-    root = CreateTree(wordToken);
-    CalculateAttr(root);
-    Print4Element(root);
+    root = CreateTree(wordToken); //建立语法分析树
+    CalculateAttr(root);          //计算继承属性
+    Print4Element(root);          //计算综合属性以及打印四元式
     return 0;
 }
