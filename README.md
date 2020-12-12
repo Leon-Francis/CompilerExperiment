@@ -6,10 +6,10 @@
 
 单词类别以及产生式如下所示：(不够整洁)
 
-![avatar](./TokenImg1.jpg)
+![avatar](./TokenIMG1.jpg)
 
-![avatar](./TokenImg2.jpg)
+![avatar](./TokenIMG2.jpg)
 
-![avatar](./ProductionImg1.jpg)
+![avatar](./ProductionIMG1.jpg)
 
-![avatar](./ProductionImg2.jpg)
+![avatar](./ProductionIMG2.jpg)
